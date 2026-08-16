@@ -13,6 +13,9 @@ from src.evaluation.plots import (
     plot_decile_calibration,
     plot_master_scale,
     plot_top_iv_features,
+    plot_cutoff_profit_curve,
+    plot_acceptance_vs_bad_rate,
+    plot_strategy_dashboard_profit_vs_risk,
 )
 
 __all__ = [
@@ -24,4 +27,7 @@ __all__ = [
     "plot_decile_calibration",
     "plot_master_scale",
     "plot_top_iv_features",
+    "plot_cutoff_profit_curve",
+    "plot_acceptance_vs_bad_rate",
+    "plot_strategy_dashboard_profit_vs_risk",
 ]

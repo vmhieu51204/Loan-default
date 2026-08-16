@@ -110,3 +110,14 @@ class ScorecardConfig:
     master_scale_bin_width: int = 50
     master_scale_min_score: int = 300
     master_scale_max_score: int = 900
+
+    # --- Financial Simulation & Expected Loss Parameters ---
+    ead: float = 20000.0  # Average Exposure at Default per loan ($)
+    interest_margin: float = 0.10  # 10% profit margin per 'Good' loan (r)
+    lgd_baseline: float = 0.50  # Baseline Loss Given Default (50% recovery / 50% loss severity)
+    lgd_stressed: float = 1.00  # Stressed Loss Given Default (100% loss severity / 0% recovery)
+
+    # --- Cutoff Optimization Settings ---
+    cutoff_min: int = 380  # Score cutoff sweep lower bound
+    cutoff_max: int = 650  # Score cutoff sweep upper bound
+    cutoff_step: int = 5  # Score cutoff step size

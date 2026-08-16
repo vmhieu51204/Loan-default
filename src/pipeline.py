@@ -22,6 +22,7 @@ from src.models.train import train_logistic_model, save_model
 from src.models.calibration import IsotonicProbabilityCalibrator
 from src.scorecard.scaling import ScorecardScaler
 from src.scorecard.master_scale import create_master_scale, create_decile_table
+from src.scorecard.strategy import compare_lgd_scenarios
 from src.evaluation.metrics import (
     evaluate_discrimination,
     evaluate_calibration_metrics,
@@ -33,6 +34,8 @@ from src.evaluation.plots import (
     plot_calibration_curve,
     plot_decile_calibration,
     plot_master_scale,
+    plot_cutoff_profit_curve,
+    plot_acceptance_vs_bad_rate,
 )
 
 
@@ -185,6 +188,27 @@ class ScorecardPipeline:
             self.model, self.final_features, self.woe_encoder
         )
 
+        # 5. Financial Strategy Simulation (Expected Loss & Cutoff Optimization)
+        print("\n--- Running Financial Strategy & Cutoff Simulation ---")
+        lgd_scenarios = {
+            f"Baseline (LGD={int(self.config.lgd_baseline*100)}%)": self.config.lgd_baseline,
+            f"Stressed (LGD={int(self.config.lgd_stressed*100)}%)": self.config.lgd_stressed,
+        }
+        cutoff_sim_df, scenario_summaries = compare_lgd_scenarios(
+            scores=test_scores,
+            targets=self.y_test,
+            pds=y_test_calib_pd,
+            ead=self.config.ead,
+            interest_margin=self.config.interest_margin,
+            scenarios=lgd_scenarios,
+            cutoff_min=self.config.cutoff_min,
+            cutoff_max=self.config.cutoff_max,
+            cutoff_step=self.config.cutoff_step,
+        )
+
+        for sc_name, sc_info in scenario_summaries.items():
+            print(f"  [{sc_name}] Optimal Cutoff C* = {sc_info['optimal_cutoff']} | Max Profit: ${sc_info['max_profit']/1e6:.2f}M | Acceptance: {sc_info['optimal_acceptance_rate']:.1%} | Bad Rate: {sc_info['optimal_bad_rate']:.2%}")
+
         self.test_results = {
             "discrimination_metrics": disc_metrics,
             "calibration_metrics": calib_metrics,
@@ -195,6 +219,8 @@ class ScorecardPipeline:
             "master_scale": master_scale,
             "decile_table": decile_table,
             "points_table": points_table,
+            "cutoff_simulation": cutoff_sim_df,
+            "scenario_summaries": scenario_summaries,
         }
 
         return self.test_results
@@ -246,6 +272,19 @@ class ScorecardPipeline:
             show=show_plots,
         )
 
+        plot_cutoff_profit_curve(
+            self.test_results["cutoff_simulation"],
+            scenario_summaries=self.test_results.get("scenario_summaries"),
+            save_path=os.path.join(fig_dir, "profit_optimization_curve.png") if fig_dir else None,
+            show=show_plots,
+        )
+
+        plot_acceptance_vs_bad_rate(
+            self.test_results["cutoff_simulation"],
+            save_path=os.path.join(fig_dir, "acceptance_vs_bad_rate.png") if fig_dir else None,
+            show=show_plots,
+        )
+
     def save_artifacts(self) -> None:
         """Saves models, tables, and scorecard outputs to disk."""
         out_dir = self.config.output_dir
@@ -271,6 +310,12 @@ class ScorecardPipeline:
                 os.path.join(out_dir, "decile_performance.csv"), index=False
             )
             print(f"Saved decile performance to: {os.path.join(out_dir, 'decile_performance.csv')}")
+
+        if "cutoff_simulation" in self.test_results:
+            self.test_results["cutoff_simulation"].to_csv(
+                os.path.join(out_dir, "cutoff_strategy_simulation.csv"), index=False
+            )
+            print(f"Saved cutoff strategy simulation to: {os.path.join(out_dir, 'cutoff_strategy_simulation.csv')}")
 
     def run(
         self,

@@ -50,6 +50,48 @@ def parse_args() -> argparse.Namespace:
         help="Target Good:Bad odds at Base Score (default: 50.0)",
     )
     parser.add_argument(
+        "--ead",
+        type=float,
+        default=20000.0,
+        help="Average Exposure at Default ($) per loan (default: 20000.0)",
+    )
+    parser.add_argument(
+        "--interest-margin",
+        type=float,
+        default=0.10,
+        help="Interest profit margin per Good borrower (default: 0.10)",
+    )
+    parser.add_argument(
+        "--lgd-baseline",
+        type=float,
+        default=0.45,
+        help="Baseline Loss Given Default ratio (default: 0.45)",
+    )
+    parser.add_argument(
+        "--lgd-stressed",
+        type=float,
+        default=0.70,
+        help="Stressed Loss Given Default ratio (default: 0.70)",
+    )
+    parser.add_argument(
+        "--cutoff-min",
+        type=int,
+        default=380,
+        help="Cutoff sweep minimum score (default: 380)",
+    )
+    parser.add_argument(
+        "--cutoff-max",
+        type=int,
+        default=650,
+        help="Cutoff sweep maximum score (default: 650)",
+    )
+    parser.add_argument(
+        "--cutoff-step",
+        type=int,
+        default=5,
+        help="Cutoff sweep step increment (default: 5)",
+    )
+    parser.add_argument(
         "--no-save-plots",
         action="store_true",
         help="Disable saving diagnostic and calibration plots to disk",
@@ -71,6 +113,13 @@ def main() -> None:
         pdo=args.pdo,
         base_score=args.base_score,
         base_odds=args.base_odds,
+        ead=args.ead,
+        interest_margin=args.interest_margin,
+        lgd_baseline=args.lgd_baseline,
+        lgd_stressed=args.lgd_stressed,
+        cutoff_min=args.cutoff_min,
+        cutoff_max=args.cutoff_max,
+        cutoff_step=args.cutoff_step,
     )
 
     pipeline = ScorecardPipeline(config=config)
