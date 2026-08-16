@@ -16,14 +16,6 @@ A modular, production-grade credit risk modeling framework and interactive polic
 | :---: | :---: |
 | ![ROC Curve](outputs/figures/roc_curve.png) | ![Calibration Curve](outputs/figures/calibration_curve.png) |
 
-| Strategy Profit Frontier | Basel III Master Scale |
-| :---: | :---: |
-| ![Comparative Profit Frontier](outputs/figures/sim_comparative_profit_frontier.png) | ![Master Scale](outputs/figures/master_scale.png) |
-
-| Feature Information Value (IV) | Score Distribution by Performance |
-| :---: | :---: |
-| ![Top IV Features](outputs/figures/top_iv_features.png) | ![Score Distribution](outputs/figures/score_distribution.png) |
-
 ---
 
 ## Key Features and Capabilities
