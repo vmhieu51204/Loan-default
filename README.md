@@ -29,8 +29,7 @@ A modular, production-grade credit risk modeling framework and interactive polic
   * Collinearity filtering ($|r| > 0.70$) to eliminate multicollinearity while preserving highest-IV attributes.
 * **Balanced Logistic Regression**: Fits regularized generalized linear models on WoE-transformed predictors.
 * **Non-Parametric Isotonic Calibration**: Applies Pool Adjacent Violators Algorithm (PAVA) on the validation partition to map raw log-odds to empirically calibrated default probabilities ($\text{PD}$).
-* **Additive Scorecard Scaling**: Scales scores via standard Points to Double Odds (PDO) formulations:
-  $$\text{Score} = \text{Base\_Points} + \sum_{j} \text{Points}(X_j \in B_{j,k})$$
+* **Additive Scorecard Scaling**: Scales scores via standard Points to Double Odds (PDO) formulations.
 * **Basel III Master Scale**: Aggregates calibrated scores into 10 discrete rating grades (AAA to D) with regulatory PD midpoints, default risk weights, and decile tracking.
 
 ### 2. Strategy and Underwriting Policy Simulation
